@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:products/networking/api_service.dart';
+import 'package:products/Provider/user_cart_provider.dart';
+import 'package:products/Shared_Preferances/shared_preferances.dart';
+import 'package:products/models/product_model.dart';
 import 'package:products/screens/product_details.dart';
+import 'package:provider/provider.dart';
 
 class Productcontainer extends StatefulWidget {
   const Productcontainer({super.key});
@@ -11,20 +14,25 @@ class Productcontainer extends StatefulWidget {
 
 class _ProductcontainerState extends State<Productcontainer> {
   @override
+  void initState() {
+    context.read<UserCartProvider>().fetchProducts();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: ApiService().fetchProduct(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        } else if (snapshot.data == null) {
-          return Text(snapshot.error.toString());
+    return Consumer<UserCartProvider>(
+      builder: (context, value, child) {
+        var products = value.products;
+        if (products.isEmpty) {
+          return Text("No Data");
         }
         return GridView.builder(
-          itemCount: snapshot.data?.length,
+          itemCount: products.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2),
           itemBuilder: (context, index) {
+            var product = products[index];
             return Padding(
               padding: EdgeInsets.all(5),
               child: Container(
@@ -43,12 +51,12 @@ class _ProductcontainerState extends State<Productcontainer> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ProductDetails(
-                                    productId: snapshot.data![index].id,
+                                    productId: product.id,
                                   ),
                                 ));
                           },
                           child: Image.network(
-                            snapshot.data![index].image,
+                            product.image,
                             // height: 150,
                             width: double.maxFinite,
                           ),
@@ -56,7 +64,7 @@ class _ProductcontainerState extends State<Productcontainer> {
                       ),
                     ),
                     Text(
-                      snapshot.data![index].title.substring(0, 13),
+                      product.title.substring(0, 13),
                       style: const TextStyle(
                           fontSize: 12, fontWeight: FontWeight.bold),
                     ),
@@ -65,7 +73,7 @@ class _ProductcontainerState extends State<Productcontainer> {
                         text: "Price :",
                         children: [
                           TextSpan(
-                            text: "${snapshot.data![index].price}/-",
+                            text: "${product.price}/-",
                             style: const TextStyle(
                                 color: Colors.green,
                                 fontWeight: FontWeight.bold),
@@ -73,14 +81,8 @@ class _ProductcontainerState extends State<Productcontainer> {
                         ],
                       ),
                     ),
-                    //
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        "Add To Cart",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
+                    //add to cart widget
+                    AddToCartButton(product: product),
                   ],
                 ),
               ),
@@ -88,6 +90,36 @@ class _ProductcontainerState extends State<Productcontainer> {
           },
         );
       },
+    );
+  }
+}
+
+// add to cart
+
+class AddToCartButton extends StatefulWidget {
+  final ProductModel product;
+  AddToCartButton({super.key, required this.product});
+
+  @override
+  State<AddToCartButton> createState() => _AddToCartButtonState();
+}
+
+class _AddToCartButtonState extends State<AddToCartButton> {
+  @override
+  MySharedPreferances myprf = MySharedPreferances();
+  Widget build(BuildContext context) {
+    return Consumer<UserCartProvider>(
+      builder: (context, value, child) => TextButton(
+        onPressed: () async {
+          value.addToCartLocal(widget.product);
+          print(value.userCartItems);
+          await myprf.saveCartItemListLocally(value.userCartItems);
+        },
+        child: const Text(
+          "Add To Cart",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 }

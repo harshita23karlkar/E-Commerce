@@ -17,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Padding(
         padding: EdgeInsets.all(50),
         child: Form(
-          autovalidateMode: AutovalidateMode.onUserInteraction,
+          // autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             children: [
               TextFormField(

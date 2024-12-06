@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:products/models/product_model.dart';
 import 'package:products/networking/api_service.dart';
+import 'package:products/screens/productsContainer.dart';
 
 class ProductDetails extends StatefulWidget {
   int productId;
@@ -70,7 +72,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 )
                               ]),
                         ),
-                        TextButton(onPressed: () {}, child: Text("Add to Cart"))
+                        AddToCartButton(product: snapshot.data as ProductModel),
                       ],
                     ),
                   )

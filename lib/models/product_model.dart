@@ -16,6 +16,7 @@ class ProductModel {
   double price;
   String description;
   Category category;
+  int quantity;
   String image;
   Rating rating;
 
@@ -25,9 +26,30 @@ class ProductModel {
     required this.price,
     required this.description,
     required this.category,
+    required this.quantity,
     required this.image,
     required this.rating,
   });
+  ProductModel copyWith({
+    int? id,
+    String? title,
+    double? price,
+    String? description,
+    Category? category,
+    String? image,
+    Rating? rating,
+    int? quantity,
+  }) =>
+      ProductModel(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        price: price ?? this.price,
+        description: description ?? this.description,
+        category: category ?? this.category,
+        image: image ?? this.image,
+        rating: rating ?? this.rating,
+        quantity: quantity ?? 1,
+      );
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
         id: json["id"],
@@ -37,6 +59,7 @@ class ProductModel {
         category: categoryValues.map[json["category"]]!,
         image: json["image"],
         rating: Rating.fromJson(json["rating"]),
+        quantity: 1,
       );
 
   Map<String, dynamic> toJson() => {

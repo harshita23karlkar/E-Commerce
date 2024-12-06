@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:products/screens/Login.dart';
-import 'package:products/screens/categaries.dart';
+import 'package:products/screens/User_Cart.dart';
 import 'package:products/screens/productsContainer.dart';
+import 'package:products/screens/user_cart_2.dart';
 
 class Homepage extends StatelessWidget {
   const Homepage({super.key});
@@ -12,7 +13,15 @@ class Homepage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.pink[200],
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.shopping_cart)),
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => UserCart2(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.shopping_cart)),
           IconButton(
               onPressed: () {
                 Navigator.push(
@@ -22,7 +31,7 @@ class Homepage extends StatelessWidget {
                   ),
                 );
               },
-              icon: Icon(Icons.person_outlined))
+              icon: const Icon(Icons.person_outlined))
         ],
       ),
       body: const Column(
